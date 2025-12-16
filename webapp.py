@@ -5,7 +5,7 @@ import hashlib
 from urllib.parse import parse_qsl
 from typing import Dict, Any
 
-import psycopg2
+import psycopg
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import JSONResponse
 
@@ -18,7 +18,6 @@ APP_TITLE = os.getenv("APP_TITLE", "Robinhood Alert Dashboard")
 
 if not TELEGRAM_BOT_TOKEN:
     raise RuntimeError("Missing TELEGRAM_BOT_TOKEN env var")
-
 if not DATABASE_URL:
     raise RuntimeError("Missing DATABASE_URL env var")
 
@@ -28,10 +27,11 @@ if not DATABASE_URL:
 app = FastAPI(title=APP_TITLE)
 
 # =========================================================
-# DB HELPERS
+# DB HELPERS (psycopg v3)
 # =========================================================
 def db():
-    return psycopg2.connect(DATABASE_URL)
+    # psycopg v3 connection
+    return psycopg.connect(DATABASE_URL)
 
 def init_db():
     with db() as conn:
@@ -61,7 +61,7 @@ def init_db():
             """)
         conn.commit()
 
-# Inicializar DB al arrancar
+# Init tables on startup
 init_db()
 
 # =========================================================
@@ -78,6 +78,7 @@ def verify_telegram_init_data(init_data: str) -> Dict[str, Any]:
         f"{k}={pairs[k]}" for k in sorted(pairs.keys())
     )
 
+    # ✅ Telegram WebApp secret key
     secret_key = hmac.new(
         b"WebAppData",
         TELEGRAM_BOT_TOKEN.encode(),
@@ -107,16 +108,16 @@ def verify_telegram_init_data(init_data: str) -> Dict[str, Any]:
     }
 
 # =========================================================
-# API ENDPOINTS
+# ENDPOINTS
 # =========================================================
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {"status": "ok", "app": APP_TITLE}
 
 @app.post("/api/bootstrap")
 async def bootstrap(request: Request):
     body = await request.json()
-    init_data = body.get("initData")
+    init_data = body.get("initData", "")
 
     tg = verify_telegram_init_data(init_data)
 
@@ -134,11 +135,8 @@ async def bootstrap(request: Request):
                 tg["telegram_user_id"],
                 tg["username"],
                 tg["first_name"],
-                tg["last_name"]
+                tg["last_name"],
             ))
         conn.commit()
 
-    return JSONResponse({
-        "ok": True,
-        "user": tg
-    })
+    return JSONResponse({"ok": True, "user": tg})
