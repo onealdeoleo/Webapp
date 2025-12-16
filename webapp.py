@@ -17,36 +17,33 @@ if not DATABASE_URL:
 
 app = FastAPI(title=APP_TITLE)
 
-
 # ---------------------------
-# Telegram Mini App auth
+# Telegram Mini App auth (CORRECTO)
 # ---------------------------
 def verify_telegram_init_data(init_data: str) -> Dict[str, Any]:
-    """
-    Verifies Telegram WebApp initData (HMAC check).
-    Returns parsed fields if valid, else raises.
-    """
     if not init_data or "hash=" not in init_data:
         raise HTTPException(status_code=401, detail="Missing initData")
 
     pairs = dict(parse_qsl(init_data, keep_blank_values=True))
     received_hash = pairs.pop("hash", "")
 
-    # Build data_check_string
-    data_check_string = "\n".join([f"{k}={pairs[k]}" for k in sorted(pairs.keys())])
+    # data_check_string ordenado
+    data_check_string = "\n".join(f"{k}={pairs[k]}" for k in sorted(pairs.keys()))
 
-    secret_key = hashlib.sha256(TELEGRAM_BOT_TOKEN.encode()).digest()
+    # ✅ secret_key correcto para WebApp:
+    secret_key = hmac.new(b"WebAppData", TELEGRAM_BOT_TOKEN.encode(), hashlib.sha256).digest()
+
     calculated_hash = hmac.new(secret_key, data_check_string.encode(), hashlib.sha256).hexdigest()
 
-    if calculated_hash != received_hash:
+    if not hmac.compare_digest(calculated_hash, received_hash):
         raise HTTPException(status_code=401, detail="Bad initData signature")
 
-    # user is a JSON string
     user_raw = pairs.get("user")
     if not user_raw:
         raise HTTPException(status_code=401, detail="No user in initData")
 
     user = json.loads(user_raw)
+
     return {
         "telegram_user": user,
         "telegram_user_id": int(user.get("id")),
@@ -54,7 +51,6 @@ def verify_telegram_init_data(init_data: str) -> Dict[str, Any]:
         "first_name": user.get("first_name"),
         "last_name": user.get("last_name"),
     }
-
 
 # ---------------------------
 # DB helpers
