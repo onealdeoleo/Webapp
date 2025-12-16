@@ -60,8 +60,12 @@ def verify_telegram_init_data(init_data: str) -> Dict[str, Any]:
 # ---------------------------
 # DB helpers
 # ---------------------------
-conn = psycopg2.connect(os.environ["DATABASE_URL"])
-return conn
+import os
+import psycopg2
+
+def db():
+    return psycopg2.connect(os.environ["DATABASE_URL"])
+
 
 def init_db():
     with db() as conn:
@@ -75,6 +79,7 @@ def init_db():
                 weekly_budget NUMERIC DEFAULT 0,
                 dip_budget NUMERIC DEFAULT 0
             );
+            """)
 
             CREATE TABLE IF NOT EXISTS alerts (
                 telegram_user_id BIGINT NOT NULL,
