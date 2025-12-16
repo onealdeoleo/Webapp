@@ -4,7 +4,7 @@ from typing import Dict, Any, List
 
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
-import psycopg
+import psycopg2
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
@@ -60,7 +60,7 @@ def verify_telegram_init_data(init_data: str) -> Dict[str, Any]:
 # DB helpers
 # ---------------------------
 def db():
-    return psycopg.connect(DATABASE_URL)
+    return conn = psycopg2.connect(os.environ["DATABASE_URL"])
 
 def init_db():
     with db() as conn:
