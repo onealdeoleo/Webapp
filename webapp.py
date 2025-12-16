@@ -5,7 +5,6 @@ from typing import Dict, Any, List
 from fastapi import FastAPI, Request, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 import psycopg2
-import os
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
 DATABASE_URL = os.getenv("DATABASE_URL", "").strip()
@@ -16,7 +15,7 @@ if not TELEGRAM_BOT_TOKEN:
 if not DATABASE_URL:
     raise RuntimeError("Missing DATABASE_URL env var")
 
-app = FastAPI()
+app = FastAPI(title=APP_TITLE)
 
 
 # ---------------------------
