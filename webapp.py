@@ -7,8 +7,7 @@ from typing import Dict, Any
 
 import psycopg
 from fastapi import FastAPI, Request, HTTPException
-from fastapi.responses import JSONResponse
-
+from fastapi.responses import HTMLResponse, JSONResponse
 # =========================================================
 # ENV VARS
 # =========================================================
