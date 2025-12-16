@@ -1,0 +1,6 @@
+python-telegram-bot[job-queue]==21.6
+yfinance==0.2.66
+pandas==2.3.3
+fastapi==0.115.6
+uvicorn==0.34.0
+psycopg[binary]==3.2.3
