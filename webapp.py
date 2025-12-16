@@ -26,6 +26,17 @@ if not DATABASE_URL:
 # =========================================================
 app = FastAPI(title=APP_TITLE)
 
+# ✅ AQUÍ VA EXACTAMENTE
+@app.get("/", response_class=HTMLResponse)
+def home():
+    return """
+    <h2>✅ Robinhood_alert Dashboard</h2>
+    <p>Tu servicio está corriendo.</p>
+    <p>Abre esta app desde Telegram (Mini App).</p>
+    """
+
+
+
 # =========================================================
 # DB HELPERS (psycopg v3)
 # =========================================================
