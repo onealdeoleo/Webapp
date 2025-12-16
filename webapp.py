@@ -60,8 +60,8 @@ def verify_telegram_init_data(init_data: str) -> Dict[str, Any]:
 # ---------------------------
 # DB helpers
 # ---------------------------
-def db():
-    return conn = psycopg2.connect(os.environ["DATABASE_URL"])
+conn = psycopg2.connect(os.environ["DATABASE_URL"])
+return conn
 
 def init_db():
     with db() as conn:
