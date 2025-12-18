@@ -29,11 +29,39 @@ app = FastAPI(title=APP_TITLE)
 @app.get("/", response_class=HTMLResponse)
 def home():
     return """
-    <h2>✅ Robinhood_alert Dashboard</h2>
-    <p>Tu servicio está corriendo.</p>
-    <p>Abre esta app desde Telegram (Mini App).</p>
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Robinhood Alert Bot</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background: #0f172a;
+                color: #e5e7eb;
+                text-align: center;
+                padding: 40px;
+            }
+            h2 { color: #22c55e; }
+            .box {
+                background: #020617;
+                padding: 20px;
+                border-radius: 12px;
+                margin-top: 20px;
+            }
+        </style>
+    </head>
+    <body>
+        <h2>✅ Robinhood Alert Bot</h2>
+        <div class="box">
+            <p>Tu Mini App está funcionando correctamente.</p>
+            <p>📲 Abre esta app desde Telegram.</p>
+            <p>🤖 El bot se controla con comandos.</p>
+        </div>
+    </body>
+    </html>
     """
-
 
 
 # =========================================================
